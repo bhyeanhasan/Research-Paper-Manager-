@@ -15,7 +15,7 @@ class Category(models.Model):
 class PaperInfo(models.Model):
     title = models.CharField(max_length=200, null=True, blank=True, default='Not set')
     description = models.TextField(max_length=1000, null=True, blank=True, default='Not set')
-    file = models.FileField(upload_to='media/')
+    file = models.FileField(upload_to='media/',max_length=500)
     category = models.ManyToManyField(Category, blank=True, null=True)
 
     def __str__(self):

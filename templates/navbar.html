@@ -6,26 +6,36 @@
 
     <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
-            <h6 class="font-weight-bolder mb-0">Manage Papers</h6>
+            <h5 class="font-weight-bolder mb-0">Manage Papers</h5>
+            <div class="input-group input-group-outline mt-2">
+                <form class="d-flex" action="{% url 'search' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <div class="form-outline" data-mdb-input-init>
+                            <input name="key" type="text" id="form1" class="form-control me-2"/>
+                            <label class="form-label" for="form1"></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" data-mdb-ripple-init>
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+
         </nav>
+
 
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
 
             <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                <div class="input-group input-group-outline">
-                    <form class="d-flex" action="{% url 'search' %}" method="POST">
-                        {% csrf_token %}
-                        <input name="key" type="text" class="form-control me-2">
-                        <input value="Search" type="submit" class="form-control">
-                    </form>
-                </div>
             </div>
 
             <ul class="navbar-nav  justify-content-end">
 
 
                 <li class="nav-item d-flex align-items-center">
-                    <a href="/admin" class="nav-link text-body font-weight-bold px-0">
+                    <a href="/admin" class="nav-link text-body font-weight-bold px-0 mt-3">
                         <i class="fa fa-user me-sm-1"></i>
                         <span class="d-sm-inline d-none">Admin</span>
                     </a>
