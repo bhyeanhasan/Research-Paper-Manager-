@@ -1,0 +1,43 @@
+<li class="mb-3">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-3">
+      <div class="d-flex align-items-start">
+        <div class="me-2">
+          <i class="bi bi-person-circle fs-4 text-secondary"></i>
+        </div>
+
+        <div class="flex-grow-1">
+          <header class="d-flex justify-content-between align-items-center mb-1">
+            <div class="fw-semibold">{{ comment.author }}</div>
+            <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+          </header>
+
+          <div class="mb-1">
+            {{ comment.content|linebreaksbr }}
+          </div>
+
+          {% if user.is_authenticated %}
+            <form action="{% url 'add_comment' paper.pk %}" method="post" class="mt-2">
+              {% csrf_token %}
+              <input type="hidden" name="parent" value="{{ comment.id }}">
+              <div class="input-group input-group-sm">
+                <textarea name="content" rows="1" class="form-control" placeholder="Write a reply…" required></textarea>
+                <button type="submit" class="btn btn-outline-primary">
+                  <i class="bi bi-reply-fill"></i> Reply
+                </button>
+              </div>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if comment.replies.all %}
+    <ul class="list-unstyled ms-4 ps-3 mt-3 border-start">
+      {% for child in comment.replies.all %}
+        {% include "comment.html" with comment=child paper=paper %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+</li>

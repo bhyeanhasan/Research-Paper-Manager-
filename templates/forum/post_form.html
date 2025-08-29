@@ -1,0 +1,115 @@
+{% extends "root.html" %}
+
+
+
+
+{% block content %}
+
+    {% include 'aside.html' %}
+
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        <div class="container">
+            <div class="row">
+                <h4 class="my-3">Start Discussion</h4>
+
+                {# flash messages #}
+                {% if messages %}
+                    <div class="mb-3">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} mb-2" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="">
+                    <form method="post" enctype="multipart/form-data" class="card m-4  p-3">
+                        {% csrf_token %}
+
+                        <div class="mb-1">
+                            <label class="form-label">Title</label>
+                            <input style="background-color: aliceblue" name="title" class="form-control px-3 " required>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label">Content</label>
+                            <textarea style="background-color: aliceblue" name="content" rows="4" class="form-control px-3 mb-2" required></textarea>
+                        </div>
+
+
+                        {#                        <div class="mb-3">#}
+                        {#                            <label class="form-label">Discussion Type</label>#}
+                        {#                            <select name="kind" class="form-select">#}
+                        {#                                {% for val,label in kinds %}#}
+                        {#                                    <option value="{{ val }}">{{ label }}</option>#}
+                        {#                                {% endfor %}#}
+                        {#                            </select>#}
+                        {#                        </div>#}
+                        {##}
+                        {#                        <div class="mb-3">#}
+                        {#                            <label class="form-label">Topic (optional)</label>#}
+                        {#                            <select name="topic" class="form-select">#}
+                        {#                                <option value="">—</option>#}
+                        {#                                {% for t in topics %}#}
+                        {#                                    <option value="{{ t.id }}">{{ t.name }}</option>#}
+                        {#                                {% endfor %}#}
+                        {#                            </select>#}
+                        {#                        </div>#}
+                        {##}
+
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-12 col-md-4">
+                                    <label class="form-label mb-1">Attachments (optional)</label>
+                                    <input style="background-color: aliceblue" type="file" name="attachments" class="form-control px-2" multiple>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label mb-1">Discussion Type</label>
+                                <select name="kind" class="form-select form-select-sm">
+                                    {% for val,label in kinds %}
+                                        <option value="{{ val }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label mb-1">Topic (optional)</label>
+                                <select name="topic" class="form-select form-select-sm">
+                                    <option value="">—</option>
+                                    {% for t in topics %}
+                                        <option value="{{ t.id }}">{{ t.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label mt-2">Tags (optional)</label>
+                            <select name="tags" class="form-select" multiple>
+                                {% for tg in tags %}
+                                    <option value="{{ tg.id }}">{{ tg.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Hold Ctrl/⌘ to select multiple</div>
+                        </div>
+
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" type="submit">Post</button>
+                            <a href="{% url 'community' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+        {% include 'footer.html' %}
+
+
+    </main>
+
+{% endblock %}

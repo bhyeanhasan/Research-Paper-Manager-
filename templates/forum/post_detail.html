@@ -1,0 +1,106 @@
+{% extends "root.html" %}
+
+{% block content %}
+    {% include 'aside.html' %}
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg mt-5 p-4">
+
+        <div class="container">
+            <div class="row">
+
+                <article class="mb-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h3 class="mb-1">{{ post.title }}</h3>
+                        {% if user.is_authenticated %}
+                            <div class="btn-group">
+                                <form method="post" action="{% url 'react_post' post.pk 'like' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm me-2 {% if user_post_reaction and user_post_reaction.kind == 'like' %}btn-success{% else %}btn-outline-success{% endif %}">
+                                        👍 Like <span class="ms-1 small">{{ post_like_count }}</span>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'react_post' post.pk 'dislike' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm {% if user_post_reaction and user_post_reaction.kind == 'dislike' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                        👎 Dislike <span class="ms-1 small">{{ post_dislike_count }}</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                        {% endif %}
+                    </div>
+
+                    <div class="text-muted small mb-2">
+                        {{ post.get_kind_display }} · {{ post.created_at|date:"Y-m-d H:i" }}
+                        {% if post.topic %} · in {{ post.topic.name }}{% endif %}
+                        {% for tg in post.tags.all %}
+                            <span class="badge text-bg-light">#{{ tg.name }}</span> {% endfor %}
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            {{ post.content|linebreaks }}
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-7">
+                            <h5 class="mb-3">Discussions</h5>
+
+                            {% if user.is_authenticated %}
+                                <form action="{% url 'add_comment' post.pk %}" method="post" class="mb-3">
+                                    {% csrf_token %}
+                                    <div class="">
+                                <textarea style="background-color: aliceblue" name="content" class="form-control p-1"
+                                      rows="3" placeholder="Write a comment…"
+                                      required></textarea>
+                                        <button class="btn btn-primary mt-3">Comment</button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <p class="text-muted">Log in to comment.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="mt-3">
+                                <h6 class="mb-2">Attachments</h6>
+                                <ul class="list-group">
+                                    {% for att in post.attachments.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="{{ att.file.url }}" download>
+                                                <i class="bi bi-file-earmark-fill"></i> {{ att.name|default:att.file.name }}
+                                            </a>
+                                            <small class="text-muted">{{ att.file.size|filesizeformat }}</small>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item text-muted">No attachments.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </article>
+                <section>
+
+
+                    {% if root_comments %}
+                        <ul class="list-unstyled">
+                            {% for comment in root_comments %}
+                                {% include "forum/_comment.html" with comment=comment post=post %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No comments yet.</p>
+                    {% endif %}
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+
+{% endblock %}

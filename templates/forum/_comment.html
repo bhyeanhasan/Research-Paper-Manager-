@@ -1,0 +1,115 @@
+<style>
+    .when-open {
+        display: none;
+    }
+
+    .collapsed .when-open {
+        display: none;
+    }
+
+    .collapsed .when-closed {
+        display: inline;
+    }
+
+    .btn[aria-expanded="true"] .when-open {
+        display: inline;
+    }
+
+    .btn[aria-expanded="true"] .when-closed {
+        display: none;
+    }
+</style>
+
+<li class="mb-3 ">
+    <div class="">
+        <div class="p-0">
+            <div class="d-flex align-items-start">
+                <div class="me-2">
+                    <span class="badge text-bg-secondary"><i class="bi bi-person-circle"></i></span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ comment.author|default:"Anon" }}</strong>
+                        <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+
+                    <div class="mt-0 mb-1">
+                        {{ comment.content|linebreaksbr }}
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="btn-group">
+                                <form method="post" action="{% url 'react_comment' comment.pk 'like' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm me-2 {% if comment.my_reaction == 'like' %}btn-success{% else %}btn-outline-success{% endif %}">
+                                        👍 <span class="ms-1 small">{{ comment.like_count }}</span>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'react_comment' comment.pk 'dislike' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm {% if comment.my_reaction == 'dislike' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                        👎 <span class="ms-1 small">{{ comment.dislike_count }}</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-8">
+                            {% if user.is_authenticated %}
+                                <form action="{% url 'add_comment' post.pk %}" method="post" class="mt-0">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="parent" value="{{ comment.id }}">
+                                    <div class="input-group input-group-sm">
+                                <textarea style="background-color: aliceblue;height: 100%" name="content" class="form-control"
+                                          rows="1" placeholder="Reply…"
+                                          required></textarea>
+                                        <button style="width: 100px;" class="btn btn-outline-primary">Reply</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    {% with reply_len=comment.replies.all|length %}
+                        {% if reply_len %}
+                            <button
+                                    class="btn btn-link btn-sm px-0 collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#replies-{{ comment.id }}"
+                                    aria-expanded="false"
+                                    aria-controls="replies-{{ comment.id }}"
+                            >
+                                <span class="when-closed">Show replies ({{ reply_len }})</span>
+                                <span class="when-open">Hide replies</span>
+                            </button>
+
+                            <div id="replies-{{ comment.id }}" class="collapse">
+                                <ul class="list-unstyled ms-4 ps-4 mt-0 border-start">
+                                    {% for child in comment.replies.all %}
+                                        {% include "forum/_comment.html" with comment=child post=post %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {#    {% if comment.replies.all %}#}
+    {#        <ul class="list-unstyled ms-4 ps-3 mt-0 border-start">#}
+    {#            {% for child in comment.replies.all %}#}
+    {#                {% include "forum/_comment.html" with comment=child post=post %}#}
+    {#            {% endfor %}#}
+    {#        </ul>#}
+    {#    {% endif %}#}
+</li>
